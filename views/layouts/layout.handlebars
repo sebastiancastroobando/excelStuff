@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title> MAIN PAGE </title>
+</head>
+<body>
+	<div class="container">
+      <div class="header clearfix">
+        <nav>
+            {{#if user}}
+              <a href="/">Refresh</a>
+              <a href="/users/logout">Logout</a>
+            {{else}}
+              <a href="/users/login">Login</a>
+              <a href="/users/register">Register</a>
+            {{/if}}
+        </nav>
+      </div>
+
+
+      <div class="row">
+        <div class="col-lg-12">
+          {{#if success_msg}}
+            <div class="succesful">{{success_msg}}</div>
+          {{/if}}
+
+          {{#if error_msg}}
+            <div class="alert1">{{error_msg}}</div>
+          {{/if}}
+
+          {{#if error}}
+            <div class="alert2">{{error}}</div>
+          {{/if}}
+          
+          {{{body}}}
+        </div>
+
+        
+      </div>
+
+    </div> 
+</body>
+</html>

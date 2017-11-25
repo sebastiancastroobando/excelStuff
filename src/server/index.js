@@ -83,10 +83,10 @@ app.post('/createuser', function (req, res) {
 
 app.get('/getuser', function (req, res) {
     console.log("Received request for user info");
-    console.log("Query for id: "+id);
 
     try{
         var id = new mongo.ObjectID(req.query.userid);
+        console.log("Query for id: "+id);        
     }catch(err){
         console.log("Error while parsing body");
         res.status(500).send("Error while parsing body");
@@ -124,9 +124,9 @@ app.get('/findmatch', function (req, res) {
 
 app.post('/updateuser', function (req, res) {
     console.log("Received request to update user");
-    console.log("Update for id: "+req.body.userid);
     try{
         var id = new mongo.ObjectID(req.body.userid);
+        console.log("Update id : "+id);
         var update = {
             'firstname': req.body.firstname,
             'lastname': req.body.lastname,
@@ -135,7 +135,7 @@ app.post('/updateuser', function (req, res) {
             'email': req.body.email,
             'phone': req.body.phone,
             'zip': req.body.zip,
-	    'hobby': req.body.hobby
+	        'hobby': req.body.hobby
         }
     }catch(err){
         console.log("Error while parsing body");
@@ -143,28 +143,35 @@ app.post('/updateuser', function (req, res) {
         return;
     }
 
+    var setquery = {
+        'firstname': update.firstname,
+        'lastname': update.lastname,
+        'about': update.about,
+        'email': update.email,
+        'phone': update.phone,
+        'zip': update.zip,
+        'hobby': update.hobby
+    }
+    if(update.password != undefined){
+        setquery.password = update.password;
+    }
 
     db.collection('users').updateOne({ "_id": id }, {
-        $set: {
-            'firstname': update.firstname,
-            'lastname': update.lastname,
-            'password': update.password,
-            'about': update.about,
-            'email': update.email,
-            'phone': update.phone,
-            'zip': update.zip,
-	    'hobby': update.hobby
-        }
+        $set: setquery
     }, function (err, result) {
         //console.log(result);
         var updateCount = result.result.nModified;
+        var foundCount = result.result.n;
         console.log("Updated "+updateCount+" Documents");
+        console.log(result.result);
         if (err ) {
             console.log(err);
 
             res.status(500).send("Error while processing request");
-        }else if (result != 1){
+        }else if (foundCount != 1){
             res.status(404).send("Unable to find user to update");
+        }else if (updateCount != 1){
+            res.status(200).send("Nothing to update");
         }else{
             console.log("preference updated");
             res.sendStatus(200);

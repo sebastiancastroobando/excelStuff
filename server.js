@@ -24,14 +24,13 @@ var path                = require('path');
 
 //=====================================================================
 
-const url           = 'mongodb://localhost:27017/comp307website';
+const url           = 'mongodb://localhost:27017/MongoDb';
 var db;
-mongoose.connect('mongodb://localhost/comp307website',{ useMongoClient: true });
+mongoose.connect('mongodb://localhost/MongoDb',{ useMongoClient: true });
 
 // Connecting to local database @ port 3000
 MongoClient.connect(url, (err, database) => {
   if(err) return console.log('Line 33: Can\'t connec to database');
-  
   
   console.log("Connection esthablished...");
   db = database;
@@ -97,7 +96,6 @@ app.use( (req, res, next) => {
   res.locals.user = req.user || null;
   next();
 });
-
 
 app.use('/', routes);
 app.use('/users', users);

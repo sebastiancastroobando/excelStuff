@@ -18,9 +18,9 @@ export default class App extends React.Component {
              <div>
                <Navigation />
                <Switch>
-                 <Route render={(props) => ( <UpdateInfo user={this.props.user}/> )} /> path="/" />
-                 <Route render={(props) => ( <UpdateInfo user={this.props.user}/> )} /> path="/updateInfo" />
-                 <Route render={(props) => ( <FindMatch user={this.props.user}/> )} /> path="/findMatch" />
+                 <Route render={(props) => <UpdateInfo {...props} user={this.props.user}/>}  path="/updateInfo" />
+                 <Route render={(props) => <FindMatch {...props} user={this.props.user}/>} path="/findMatch" />
+                 <Route render={(props) => <Home {...props} user={this.props.user}/>} path="/" />
                </Switch>
              </div>
            </HashRouter>

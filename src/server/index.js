@@ -86,7 +86,7 @@ app.get('/getuser', function (req, res) {
 
     try{
         var id = new mongo.ObjectID(req.query.userid);
-        console.log("Query for id: "+id);        
+        console.log("Query for id: "+id);
     }catch(err){
         console.log("Error while parsing body");
         res.status(500).send("Error while parsing body");
@@ -117,7 +117,25 @@ app.get('/findmatch', function (req, res) {
             res.status(500).send("Error while processing request");
             console.log(err);
         }
-        res.status(200).send("User matched: " + result["_id"]);
+        try{
+            var id = new mongo.ObjectID(result["_id"]);
+            console.log("Query for id: "+id);
+        }catch(err){
+            console.log("Error while parsing body");
+            res.status(500).send("Error while parsing body");
+            return;
+        }
+        db.collection('users').findOne({ '_id': id }, function (err, result) {
+            if (err) {
+                res.status(500).send("Error while processing request");
+            }
+            else if (result != null) {
+                res.status(200).send(result);
+            } else {
+                res.status(404).send("No user found");
+            }
+        });
+
     });
 
 });

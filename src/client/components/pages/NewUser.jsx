@@ -55,7 +55,9 @@ export default class newUser extends React.Component {
     }
     render() {
         return (
-            <div className="col-md-6 col-md-offset-3">
+            <div className="container">
+              <h1 className="text-center">Match Maker</h1>
+              <div style={{marginTop:"10px"}} className="col-md-6 col-md-offset-3 jumbotron">
                 <h2>Register</h2>
                 <form name="form" onSubmit={this.handleSubmit}>
                     <div className={'form-group' + (this.state.submitted && !this.state.user.firstname ? ' has-error' : '')}>
@@ -90,9 +92,10 @@ export default class newUser extends React.Component {
                         <button className="btn btn-primary">Register</button>
                         <Link to="/" className="btn btn-link">Cancel</Link>
                     </div>
-                    {this.state.validLogin ? null:<Warning message="Username already taken"/>}
+                    {this.state.validLogin ? null:<Warning danger={true} message="Username already taken"/>}
                 </form>
             </div>
+          </div>
         );
     }
 }

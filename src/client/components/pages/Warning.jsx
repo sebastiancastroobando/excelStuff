@@ -3,8 +3,8 @@ import React from 'react';
 export default class Warning extends React.Component{
   render(){
     return(
-      <div className="alert alert-danger">
-        <strong>Error:</strong> {this.props.message}.
+      <div className={this.props.danger==true ? "alert alert-danger":"alert alert-success"}>
+        <strong> {this.props.message} </strong>
       </div>
     )
   }

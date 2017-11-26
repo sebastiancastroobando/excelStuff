@@ -16,71 +16,54 @@ export default class UpdateInfo extends React.Component {
       email:"",
       phone:"",
       zip:"",
-      hobbies:{
-        first:null,
-        second:null,
-        third:null
-      }
+      hobby:""
     };
     this.handleUserUpdate = this.handleUserUpdate.bind(this);
-    this.handleHobbieUpdate = this.handleHobbieUpdate.bind(this);
   }
   handleChange(propertyName, event) {
     const contact = this.state;
-    contact[propertyName] = event.target.value;
-    this.setState({ contact: contact });
-  }
-  handleHobbieChange(propertyName,event){
-    const contact = this.state.hobbies;
-
-    //make current option selectable
-    if(event!=null && contact[propertyName]!=null){
-      var objIndex = this.state.hobbieOptions.findIndex((obj => obj.value == contact[propertyName]));
-      this.state.hobbieOptions[objIndex].disabled=false;
+    if(propertyName!='hobby'){
+      contact[propertyName] = event.target.value;
+    }else{
+      contact[propertyName] = event.value;
     }
-
-    contact[propertyName] = (event==null)? null:event.value;
-    //disable selected option
-    var objIndex = this.state.hobbieOptions.findIndex((obj => obj.value == event.value));
-    this.state.hobbieOptions[objIndex].disabled=true;
-
     this.setState({ contact: contact });
   }
-  handleUserUpdate(){
+  handleUserUpdate(event){
     event.preventDefault();
+    //create object to send
+    const updateInfo={
+          firstname:this.state.firstname,
+          lastname:this.state.lastname,
+          about:this.state.about,
+          email:this.state.email,
+          phone:this.state.phone,
+          zip:this.state.zip,
+          hobby:this.state.hobby,
+          userid:this.props.user
 
-    axios.post('/updateuser',
-    {
-      firstname:this.state.firstname,
-      lastname:this.state.lastname,
-      about:this.state.about,
-      email:this.state.email,
-      phone:this.state.phone,
-      zip:this.state.zip,
-      userid:this.props.user
     }
-    )
+    //set password if it is to be changed
+    if(this.state.password==this.state.passwordConfirm && this.state.password!=''){
+      updateInfo.password=this.state.password;
+    }
+    axios.post('/updateuser',updateInfo)
     .then(response=> {
-      console.log(response);
+      this.setState({updateSuccess:true});
     })
 
-  }
-  handleHobbieUpdate(){
-    //TODO
-    console.log(this.state.hobbies);
-    event.preventDefault();
   }
   componentDidMount(){
     //get hobbies list
     axios.get('/gethobbies')
     .then(response=> {
-      this.setState({hobbieOptions:response.data.map(function(obj){return {value:obj,label:obj,disabled:false}})});
+      this.setState({hobbyOptions:response.data.map(function(obj){return {value:obj,label:obj}})});
     })
-    console.log(this.props.user);
+    //user info
     axios.get('/getuser?userid='+this.props.user).then(response=> {
-      console.log(response.data);
       this.setState(response.data);
       this.setState({password:''});
+      this.setState({updateSuccess:false});
     })
   }
   render() {
@@ -97,7 +80,7 @@ export default class UpdateInfo extends React.Component {
             <input className="form-group form-control" placeholder="leave blank to not change password" type="password" onChange={this.handleChange.bind(this, 'password')} value={this.state.password}/>
             <label>Complete Password</label>
             <input className="form-group form-control" type="password" onChange={this.handleChange.bind(this, 'passwordConfirm')} value={this.state.passwordConfirm}/>
-            {this.state.password!=this.state.passwordConfirm? <Warning message="Passwords don't match"/>:null}
+            {this.state.password!=this.state.passwordConfirm? <Warning danger={true} message="Passwords don't match"/>:null}
             <label>About You</label>
             <textarea className="form-group form-control" required type="text" rows="5" onChange={this.handleChange.bind(this, 'about')} value={this.state.about}/>
             <label>Email:</label>
@@ -106,27 +89,14 @@ export default class UpdateInfo extends React.Component {
             <input className="form-group form-control" required type="text" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" onChange={this.handleChange.bind(this, 'phone')} value={this.state.phone}/>
             <label>Zip Code:</label>
             <input className="form-group form-control" required type="text" onChange={this.handleChange.bind(this, 'zip')} value={this.state.zip}/>
+            <div className="form-group">
+                <label>First Preference:</label>
+                <Select required value={this.state.hobby} options={this.state.hobbyOptions} onChange={this.handleChange.bind(this, 'hobby')}/>
+            </div>
             <input type="submit" className="btn btn-primary" onClick={this.handleUserUpdate} value="Update Information"/>
           </form>
-          </div>
-          <div>
-            <h3>Hobbie Preferences:</h3>
-            <form>
-            <div className="form-group">
-              <label>First Preference:</label>
-              <Select required value={this.state.hobbies.first} placeholder="select first hobbie" options={this.state.hobbieOptions} onChange={this.handleHobbieChange.bind(this, 'first')}/>
-            </div>
-            <div className="form-group">
-              <label>Second Preference:</label>
-              <Select required value={this.state.hobbies.second} placeholder="select second hobbie" options={this.state.hobbieOptions} onChange={this.handleHobbieChange.bind(this, 'second')}/>
-            </div>
-            <div className="form-group">
-              <label>Third Preference:</label>
-              <Select required value={this.state.hobbies.third} placeholder="select third hobbie" options={this.state.hobbieOptions} onChange={this.handleHobbieChange.bind(this, 'third')}/>
-            </div>
-            <input type="submit" className="btn btn-primary" onClick={this.handleHobbieUpdate} value="Update Preferences"/>
-            </form>
-          </div>
+         </div>
+          {this.state.updateSuccess==true ? <Warning danger={false} message="Update Sucessful"/>:null}
       </div>
     );
   }

@@ -46,7 +46,9 @@ export default class Login extends React.Component {
     render() {
         const { username, password, submitted } = this.state;
         return (
-            <div className="col-md-6 col-md-offset-3">
+          <div className="container">
+            <h1 className="text-center">Match Maker</h1>
+            <div style={{marginTop:"10px"}} className="col-md-6 col-md-offset-3 jumbotron">
                 <h2>Login</h2>
                 <form name="form" onSubmit={this.handleSubmit}>
                     <div className={'form-group' + (submitted && !username ? ' has-error' : '')}>
@@ -67,8 +69,9 @@ export default class Login extends React.Component {
                         <button className="btn btn-primary">Login</button>
                         <Link to="/register" className="btn btn-link">Register</Link>
                     </div>
-                    {this.state.validLogin ? null:<Warning message="Invalid Login"/>}
+                    {this.state.validLogin ? null:<Warning danger={true} message="Invalid Login"/>}
                 </form>
+              </div>
             </div>
         );
     }

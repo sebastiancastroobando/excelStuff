@@ -11,7 +11,7 @@ export default class Navigation extends React.Component {
           <Navbar className="navbar-inverse navbar-default navbar-static-top" collapseOnSelect>
             <Navbar.Header>
                 <Navbar.Brand>
-                  <LinkContainer to="/Home">
+                  <LinkContainer to="/">
                     <a>Match Maker</a>
                   </LinkContainer>
                 </Navbar.Brand>

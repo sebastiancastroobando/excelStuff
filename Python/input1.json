@@ -1,0 +1,10 @@
+{
+    "_id" : "123", 
+    "firstname": "Sebastian",
+    "lastname": "Castro",
+    "password": "qwerty",
+    "about": "a latino guy",
+    "email": "sebastian@gmail.com",
+    "phone": "911",
+    "zip": "H3T 1R9"
+}

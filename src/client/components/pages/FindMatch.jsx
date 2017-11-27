@@ -16,7 +16,7 @@ export default class FindMatch extends React.Component {
   }
   findMatch(event){
     event.preventDefault();
-    axios.get('/findmatch')
+    axios.get('/findmatch?userid='+this.props.user)
     .then(response=> {
       this.setState({match:response.data});
       this.setState({matchFound:true});

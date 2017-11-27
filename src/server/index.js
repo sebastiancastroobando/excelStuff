@@ -1,5 +1,8 @@
 var express = require('express');
 var app = express();
+var exec = require('child_process').exec, child;
+var fs = require('fs');
+
 
 
 const bodyParser = require('body-parser');
@@ -108,9 +111,70 @@ app.get('/getuser', function (req, res) {
 });
 
 app.get('/findmatch', function (req, res) {
-    //TODO (ANTHONY) exec python script
+    try{
+        var userid = new mongo.ObjectID(req.query.userid);
+        console.log("Match requested for id: "+req.query.userid);
+
+        db.collection('users').findOne({ '_id': userid }, function (err, result) {
+            if (err) {
+                res.status(500).send("Error while processing request");
+            }
+            else if (result == null) {
+                res.status(404).send("Requested user not found");
+            } else {
+                var user = result;
+                //db.collection('users').find({ '_id':{$ne:userid}, 'hobby':result.hobby}, function(err, result2){
+                db.collection('users').find({ '_id':{$ne:userid}, 'hobby':result.hobby}).toArray(function(err, result2){
+                        
+                    console.log("Requested list of match on hobby");
+                    console.log("T!: "+result2);
+                    
+                    var count = result2.length;
+
+                    console.log("That is, "+count+" users");
+                    if(count == 0){
+                        res.status(404).send("No match found");
+                        return;
+                    }
+                    //console.log("Matched :"+JSON.stringify(result2.toArray()));
+                    var user1 = result;
+                    var userlist = result2;
+                    
+                    fs.writeFileSync('in1.json',JSON.stringify(user1))
+                    fs.writeFileSync('in2.json',JSON.stringify(userlist))
+                
+                    child = exec('python ../../Python/script.py in1.json in2.json > out.txt',function (err, stdout, stderr){
+                        console.log("Executing script");
+                        //console.log(stdout);
+                        var resultId = fs.readFileSync('out.txt');
+                        //resultId = resultId.replace(/(\r\n|\n|\r)/gm,"");
+                        resultId = resultId.toString().trim();
+                        console.log("Result match: >"+resultId+"<");
+                        db.collection('users').findOne({'_id': new mongo.ObjectId(resultId)}, function(err, result3){
+                            if (err) {
+                                res.status(500).send("Error while processing request");
+                            }
+                            else if (result3 != null) {
+                                res.status(200).send(result3);
+                            } else {
+                                console.log("no user found");
+                                res.status(404).send("No user found");
+                            }
+                        })
+
+                    });
+                    
+                    
+                });
+            }
+        });
+    }catch(err){
+        res.status(500).end();
+    } 
+    /*
 
     //Temp, return a random user (actually not random)
+    console.log("Requested match");
 
     db.collection('users').findOne({}, function (err, result) {
         if (err) {
@@ -130,13 +194,14 @@ app.get('/findmatch', function (req, res) {
                 res.status(500).send("Error while processing request");
             }
             else if (result != null) {
+                delete result.password;
                 res.status(200).send(result);
             } else {
                 res.status(404).send("No user found");
             }
         });
 
-    });
+    });*/
 
 });
 

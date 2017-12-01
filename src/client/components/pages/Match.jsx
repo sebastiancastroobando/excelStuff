@@ -40,6 +40,7 @@ export default class Match extends React.Component {
             <GoogleMapReact
               defaultCenter={this.state.center}
               defaultZoom={this.state.zoom}
+		bootstrapURLKeys={{key: "AIzaSyBj_McDbYsrs-J5tXntOmRAgbSvNOZXr2Y"}}
             >
             </GoogleMapReact>
           :null}
